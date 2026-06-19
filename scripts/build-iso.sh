@@ -49,7 +49,14 @@ echo "📦 Création du système de base (Debian)..."
 debootstrap --arch=amd64 --variant=minbase \
     bookworm "$CHROOT_DIR" http://deb.debian.org/debian/
 
-# Étape 2: Configuration du système
+# Étape 2: Monter les systèmes de fichiers nécessaires
+echo "🔧 Montage des systèmes de fichiers..."
+mount --bind /dev "$CHROOT_DIR/dev"
+mount --bind /dev/pts "$CHROOT_DIR/dev/pts"
+mount -t proc proc "$CHROOT_DIR/proc"
+mount -t sysfs sys "$CHROOT_DIR/sys"
+
+# Étape 3: Configuration du système
 echo "⚙️  Configuration du système..."
 cat > "$CHROOT_DIR/etc/hostname" << EOF
 nextprojectos
@@ -58,25 +65,42 @@ EOF
 cat > "$CHROOT_DIR/etc/hosts" << EOF
 127.0.0.1   localhost
 127.0.1.1   nextprojectos
+
+# Réseau
+::1         localhost ip6-localhost ip6-loopback
+fe00::0     ip6-localnet
+ff00::0     ip6-mcastprefix
+ff02::1     ip6-allnodes
+ff02::2     ip6-allrouters
 EOF
 
-# Étape 3: Installation des paquets
-echo "📥 Installation des paquets..."
+cat > "$CHROOT_DIR/etc/apt/sources.list" << APT
+# Debian bookworm (stable)
+deb http://deb.debian.org/debian bookworm main contrib non-free-firmware
+deb http://deb.debian.org/debian-security bookworm-security main contrib non-free-firmware
+deb http://deb.debian.org/debian bookworm-updates main contrib non-free-firmware
+APT
+
+# Copier la configuration DNS (résout les problèmes de réseau dans le chroot)
+cp /etc/resolv.conf "$CHROOT_DIR/etc/resolv.conf"
+
+# Étape 4: Installation des paquets
+echo "📥 Installation des paquets (cela peut prendre 5-10 minutes)..."
 chroot "$CHROOT_DIR" apt-get update
 chroot "$CHROOT_DIR" apt-get install -y --no-install-recommends \
     linux-image-amd64 live-boot systemd-sysv \
     xorg openbox \
     python3 python3-gi python3-gi-cairo \
-    gir1.2-gtk-3.0 gir1.2-gtksource-4 \
+    python3-gi-cairo gir1.2-gtk-3.0 gir1.2-gtksource-4 \
     gir1.2-vte-2.91 gir1.2-wnck-3.0 \
     picom \
     network-manager pulseaudio \
-    fonts-cantarell fonts-dejavu \
+    fonts-cantarell fonts-dejavu-core \
     firefox-esr \
     xinit xterm \
     plymouth plymouth-themes
 
-# Étape 4: Installation de l'environnement de bureau NPOS
+# Étape 5: Installation de l'environnement de bureau NPOS
 echo "🖥️  Installation de l'environnement Aero..."
 NPOS_DIR="/opt/npos"
 mkdir -p "$CHROOT_DIR/$NPOS_DIR"
@@ -116,7 +140,7 @@ Comment=Environnement de bureau Aero
 X-GNOME-Autostart-enabled=true
 AUTOSTART
 
-# Étape 5: Configuration du thème par défaut
+# Étape 6: Configuration du thème par défaut
 echo "🎨 Configuration du thème..."
 mkdir -p "$CHROOT_DIR/etc/skel/.local/share/themes"
 mkdir -p "$CHROOT_DIR/etc/skel/.local/share/icons"
@@ -128,7 +152,7 @@ cp -r "$CHROOT_DIR/$NPOS_DIR/desktop/theme/aero" "$CHROOT_DIR/etc/skel/.local/sh
 cp -r "$CHROOT_DIR/$NPOS_DIR/desktop/theme/icons/np-icons" "$CHROOT_DIR/etc/skel/.local/share/icons/NPIcons"
 cp -r "$CHROOT_DIR/$NPOS_DIR/desktop/wallpaper" "$CHROOT_DIR/etc/skel/.local/share/backgrounds/npos"
 
-# Étape 6: Configuration du démarrage
+# Étape 7: Configuration du démarrage
 echo "🔧 Configuration du démarrage..."
 mkdir -p "$CHROOT_DIR/boot/grub"
 
@@ -144,14 +168,21 @@ GRUB_BACKGROUND=/usr/share/backgrounds/npos/default.svg
 GRUB
 echo "GRUB_THEME=/boot/grub/themes/npos/theme.txt" >> "$CHROOT_DIR/etc/default/grub"
 
-# Étape 7: Nettoyage
+# Étape 8: Nettoyage
 echo "🧹 Nettoyage..."
 chroot "$CHROOT_DIR" apt-get clean
 rm -rf "$CHROOT_DIR/var/lib/apt/lists/*"
 rm -rf "$CHROOT_DIR/tmp/*"
 rm -rf "$CHROOT_DIR/root/.bash_history"
 
-# Étape 8: Création de l'ISO
+# Démontage des systèmes de fichiers
+echo "🔌 Démontage des systèmes de fichiers..."
+umount -l "$CHROOT_DIR/dev/pts" 2>/dev/null || true
+umount -l "$CHROOT_DIR/dev" 2>/dev/null || true
+umount -l "$CHROOT_DIR/proc" 2>/dev/null || true
+umount -l "$CHROOT_DIR/sys" 2>/dev/null || true
+
+# Étape 9: Création de l'ISO
 echo "💿 Création de l'ISO..."
 
 # SquashFS du système
