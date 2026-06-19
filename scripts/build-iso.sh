@@ -194,11 +194,28 @@ mkdir -p "$WORK_DIR/isolinux"
 cp "$CHROOT_DIR/boot/vmlinuz-"* "$WORK_DIR/isolinux/vmlinuz"
 cp "$CHROOT_DIR/boot/initrd.img-"* "$WORK_DIR/isolinux/initrd"
 
+# Copier les fichiers ISOLINUX depuis le système hôte
+for f in isolinux.bin ldlinux.c32 libutil.c32 libcom32.c32; do
+    find /usr/lib -name "$f" -exec cp {} "$WORK_DIR/isolinux/" \; 2>/dev/null
+done
+# Si introuvable, chercher dans /usr/share
+for f in isolinux.bin ldlinux.c32; do
+    [ -f "$WORK_DIR/isolinux/$f" ] && continue
+    find /usr/share -name "$f" -exec cp {} "$WORK_DIR/isolinux/" \; 2>/dev/null
+done
+
+# Vérifier que isolinux.bin a été trouvé
+if [ ! -f "$WORK_DIR/isolinux/isolinux.bin" ]; then
+    echo "❌ isolinux.bin introuvable. Installez le paquet isolinux :"
+    echo "   sudo apt install isolinux"
+    exit 1
+fi
+
 # Configuration ISOLINUX
 cat > "$WORK_DIR/isolinux/isolinux.cfg" << ISOLINUX
 DEFAULT npos
 LABEL npos
-    SAY Démarrer NextProjectOS...
+    SAY Demarrage NextProjectOS...
     KERNEL /isolinux/vmlinuz
     APPEND initrd=/isolinux/initrd boot=live quiet splash
 ISOLINUX
@@ -207,7 +224,7 @@ ISOLINUX
 xorriso -as mkisofs \
     -iso-level 3 \
     -full-iso9660-filenames \
-    -volid "NextProjectOS" \
+    -volid "NEXTOS" \
     -output "$OUTPUT_DIR/NextProjectOS.iso" \
     -isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin \
     -eltorito-boot isolinux/isolinux.bin \
