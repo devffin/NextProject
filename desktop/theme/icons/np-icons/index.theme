@@ -1,0 +1,18 @@
+[Icon Theme]
+Name=NPIcons
+Comment=Icones NextProjectOS style Aero
+Example=nextfile
+Inherits=Adwaita,gnome,hicolor
+
+[Desktop Entry]
+Type=X-GNOME-IconTheme
+Name=NPIcons
+Comment=Icones NextProjectOS
+
+[KDE Icon Theme]
+Name=NPIcons
+Comment=Icones NextProjectOS
+
+[GNOME Icon Theme]
+Name=NPIcons
+Comment=Icones NextProjectOS

@@ -1,0 +1,56 @@
+# NextProjectOS Aero theme for Openbox
+
+# Window appearance
+window.client.color                    = #1e88e5
+window.client.alpha                    = 220
+
+# Titlebar
+window.title.bg                        = flat
+window.title.color                     = #1e88e5
+window.title.text.color                = #ffffff
+window.title.text.justify              = center
+window.title.text.font                 = sans-serif:weight=bold:size=10
+window.title.height                    = 28
+
+# Titlebar buttons
+window.button.padding                  = 2
+window.button.unified                  = true
+window.button.unified.size             = 16
+window.button.close.color              = #e53935
+window.button.maximize.color           = #4fc3f7
+window.button.iconify.color            = #4fc3f7
+
+# Window border
+window.border.width                    = 1
+window.border.color                    = #4fc3f7
+
+# Active window
+window.active.button.unified.color     = #4fc3f7
+window.active.title.bg                 = flat
+window.active.title.color              = #1e88e5
+window.active.client.color             = #3d3d3d
+
+# Inactive window
+window.inactive.title.color            = #1565c0
+window.inactive.button.unified.color   = #1565c0
+window.inactive.client.color           = #353535
+window.inactive.title.text.color       = rgba(255,255,255,0.5)
+
+# Menu
+menu.border.width                      = 1
+menu.border.color                      = #4fc3f7
+menu.bg.color                          = rgba(35,35,45,0.95)
+menu.separator.color                   = rgba(255,255,255,0.1)
+menu.item.text.color                   = #ffffff
+menu.item.text.justify                 = left
+menu.item.text.font                    = sans-serif:size=10
+menu.item.height                       = 24
+menu.item.bg                          = flat
+menu.item.bg.color                    = transparent
+menu.item.hover.bg                    = flat
+menu.item.hover.bg.color             = #1e88e5
+menu.item.disabled.text.color         = rgba(255,255,255,0.3)
+
+# Active window border glow
+window.active.border.color             = #4fc3f7
+window.inactive.border.color           = rgba(79,195,247,0.2)

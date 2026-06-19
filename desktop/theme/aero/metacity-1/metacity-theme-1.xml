@@ -1,0 +1,133 @@
+<?xml version="1.0"?>
+<metacity_theme>
+<info>
+    <name>NextAero</name>
+    <author>NextProjectOS</author>
+    <copyright>MIT</copyright>
+    <date>2026</date>
+    <description>Thème Aero transparent pour Metacity</description>
+</info>
+
+<frame_geometry name="aero" rounded_top_left="true" rounded_top_right="true" rounded_bottom_left="false" rounded_bottom_right="false">
+    <distance name="left_width" value="1"/>
+    <distance name="right_width" value="1"/>
+    <distance name="bottom_height" value="1"/>
+    <distance name="left_titlebar_edge" value="6"/>
+    <distance name="right_titlebar_edge" value="6"/>
+    <distance name="title_vertical_pad" value="4"/>
+    <aspect_ratio name="button" value="1.0"/>
+    <border name="title_border" left="4" right="4" top="2" bottom="2"/>
+</frame_geometry>
+
+<frame_style name="aero-focused" geometry="aero">
+    <piece position="entire_background" draw_ops="aero_background_focused"/>
+    <piece position="title" draw_ops="aero_title_focused"/>
+    <button function="close" state="normal" draw_ops="close_normal"/>
+    <button function="close" state="prelight" draw_ops="close_prelight"/>
+    <button function="close" state="pressed" draw_ops="close_pressed"/>
+    <button function="minimize" state="normal" draw_ops="minimize_normal"/>
+    <button function="minimize" state="prelight" draw_ops="minimize_prelight"/>
+    <button function="minimize" state="pressed" draw_ops="minimize_pressed"/>
+    <button function="maximize" state="normal" draw_ops="maximize_normal"/>
+    <button function="maximize" state="prelight" draw_ops="maximize_prelight"/>
+    <button function="maximize" state="pressed" draw_ops="maximize_pressed"/>
+</frame_style>
+
+<frame_style name="aero-unfocused" geometry="aero">
+    <piece position="entire_background" draw_ops="aero_background_unfocused"/>
+    <piece position="title" draw_ops="aero_title_unfocused"/>
+    <button function="close" state="normal" draw_ops="close_normal_unfocused"/>
+    <button function="minimize" state="normal" draw_ops="minimize_normal_unfocused"/>
+    <button function="maximize" state="normal" draw_ops="maximize_normal_unfocused"/>
+</frame_style>
+
+<draw_ops name="aero_background_focused">
+    <rectangle color="#1e88e5" filled="true" x="0" y="0" width="width" height="height"/>
+    <gradient type="vertical" x="0" y="0" width="width" height="height/2">
+        <color value="#4fc3f7" alpha="0.4"/>
+        <color value="#1e88e5" alpha="0.1"/>
+    </gradient>
+</draw_ops>
+
+<draw_ops name="aero_background_unfocused">
+    <rectangle color="#1e88e5" filled="true" x="0" y="0" width="width" height="height" alpha="0.5"/>
+</draw_ops>
+
+<draw_ops name="aero_title_focused">
+    <title color="#ffffff" x="0" y="0" width="width" height="height"/>
+</draw_ops>
+
+<draw_ops name="aero_title_unfocused">
+    <title color="rgba(255,255,255,0.6)" x="0" y="0" width="width" height="height"/>
+</draw_ops>
+
+<draw_ops name="close_normal">
+    <image filename="close.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height" alpha="0.8"/>
+</draw_ops>
+
+<draw_ops name="close_prelight">
+    <image filename="close.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height"/>
+    <rectangle color="#e53935" filled="true" x="2" y="2" width="width-4" height="height-4" alpha="0.3"/>
+</draw_ops>
+
+<draw_ops name="close_pressed">
+    <image filename="close.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height"/>
+    <rectangle color="#b71c1c" filled="true" x="2" y="2" width="width-4" height="height-4" alpha="0.5"/>
+</draw_ops>
+
+<draw_ops name="minimize_normal">
+    <image filename="minimize.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height" alpha="0.8"/>
+</draw_ops>
+
+<draw_ops name="minimize_prelight">
+    <image filename="minimize.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height"/>
+    <rectangle color="#4fc3f7" filled="true" x="2" y="2" width="width-4" height="height-4" alpha="0.3"/>
+</draw_ops>
+
+<draw_ops name="minimize_pressed">
+    <image filename="minimize.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height"/>
+    <rectangle color="#0d47a1" filled="true" x="2" y="2" width="width-4" height="height-4" alpha="0.5"/>
+</draw_ops>
+
+<draw_ops name="maximize_normal">
+    <image filename="maximize.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height" alpha="0.8"/>
+</draw_ops>
+
+<draw_ops name="maximize_prelight">
+    <image filename="maximize.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height"/>
+    <rectangle color="#4fc3f7" filled="true" x="2" y="2" width="width-4" height="height-4" alpha="0.3"/>
+</draw_ops>
+
+<draw_ops name="maximize_pressed">
+    <image filename="maximize.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height"/>
+    <rectangle color="#0d47a1" filled="true" x="2" y="2" width="width-4" height="height-4" alpha="0.5"/>
+</draw_ops>
+
+<draw_ops name="close_normal_unfocused">
+    <image filename="close.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height" alpha="0.3"/>
+</draw_ops>
+
+<draw_ops name="minimize_normal_unfocused">
+    <image filename="minimize.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height" alpha="0.3"/>
+</draw_ops>
+
+<draw_ops name="maximize_normal_unfocused">
+    <image filename="maximize.svg" x="(width - object_width)/2" y="(height - object_height)/2" width="object_width" height="object_height" alpha="0.3"/>
+</draw_ops>
+
+<frame_style_set name="aero">
+    <frame focus="yes" style="aero-focused"/>
+    <frame focus="no" style="aero-unfocused"/>
+</frame_style_set>
+
+<window type="normal" style_set="aero"/>
+<window type="dialog" style_set="aero"/>
+<window type="modal_dialog" style_set="aero"/>
+<window type="menu" style_set="aero"/>
+<window type="utility" style_set="aero"/>
+<window type="border" style_set="aero"/>
+
+<menu_icon function="close" state="normal" draw_ops="close_normal"/>
+<menu_icon function="maximize" state="normal" draw_ops="maximize_normal"/>
+<menu_icon function="unmaximize" state="normal" draw_ops="maximize_normal"/>
+</metacity_theme>

@@ -1,0 +1,12 @@
+[Desktop Entry]
+Type=X-GNOME-Metatheme
+Name=NextAero
+Comment=Thème Aero transparent style Windows 7 pour NextProjectOS
+Encoding=UTF-8
+
+[X-GNOME-Metatheme]
+GtkTheme=NextAero
+MetacityTheme=NextAero
+IconTheme=NPIcons
+CursorTheme=default
+ButtonLayout=close,minimize,maximize:

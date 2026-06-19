@@ -1,0 +1,279 @@
+/* NextProjectOS Aero Theme - GTK3 */
+/* Verre transparent style Windows 7 Aero Glass */
+
+@define-color aero_glass #1e88e5;
+@define-color aero_light #4fc3f7;
+@define-color aero_dark #0d47a1;
+@define-color aero_glow rgba(79, 195, 247, 0.3);
+@define-color glass_bg rgba(30, 136, 229, 0.75);
+@define-color glass_border rgba(79, 195, 247, 0.4);
+@define-color text_light #ffffff;
+@define-color text_dark #e0e0e0;
+@define-color bg_dark #2d2d2d;
+
+* {
+    -GtkToolButton-icon-spacing: 4;
+    -GtkTextView-error-underline-color: #cc0000;
+    -GtkScrolledWindow-scrollbar-spacing: 0;
+    -GtkToolItemGroup-expander-size: 11;
+    -GtkTreeView-expander-size: 11;
+    -GtkTreeView-horizontal-separator: 4;
+    -GtkWidget-text-handle: 0;
+    -GtkDialog-action-area-border: 0;
+    -GtkDialog-content-area-border: 0;
+    -GtkDialog-button-spacing: 8;
+    -GtkWidget-focus-padding: 1;
+    -GtkWidget-focus-line-width: 0;
+    outline-style: none;
+    outline-offset: 0;
+}
+
+.background {
+    background-color: rgba(45, 45, 45, 0.85);
+    color: @text_light;
+}
+
+.background.client-decorated {
+    background-color: transparent;
+}
+
+/* Fenêtres avec effet Aero */
+window {
+    background: transparent;
+    border: none;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3), 0 1px 3px rgba(0,0,0,0.2);
+}
+
+window > decoration, window > .csd {
+    background: transparent;
+    border: 1px solid @glass_border;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+}
+
+window > decoration:backdrop, window > .csd:backdrop {
+    border-color: rgba(79, 195, 247, 0.2);
+}
+
+/* Barre de titre */
+.titlebar {
+    background: linear-gradient(to bottom, rgba(79, 195, 247, 0.4), rgba(30, 136, 229, 0.35));
+    border: none;
+    border-bottom: 1px solid @glass_border;
+    border-radius: 0;
+    color: @text_light;
+    padding: 2px 6px;
+    min-height: 28px;
+}
+
+.titlebar:backdrop {
+    background: linear-gradient(to bottom, rgba(79, 195, 247, 0.2), rgba(30, 136, 229, 0.15));
+    border-bottom-color: rgba(79, 195, 247, 0.15);
+}
+
+.titlebar .title {
+    color: @text_light;
+    font-weight: bold;
+    font-size: 11px;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+}
+
+.titlebar:backdrop .title {
+    color: rgba(255,255,255,0.6);
+}
+
+/* Boutons de la barre de titre */
+.titlebar button.titlebutton {
+    background: transparent;
+    border: none;
+    color: @text_light;
+    padding: 2px 8px;
+    min-width: 24px;
+    min-height: 20px;
+    border-radius: 2px;
+}
+
+.titlebar button.titlebutton:hover {
+    background: rgba(255,255,255,0.15);
+}
+
+.titlebar button.titlebutton.close:hover {
+    background: #e53935;
+}
+
+.titlebar button.titlebutton:backdrop {
+    color: rgba(255,255,255,0.5);
+}
+
+/* Boutons généraux */
+button {
+    background: linear-gradient(to bottom, rgba(79, 195, 247, 0.2), rgba(30, 136, 229, 0.15));
+    border: 1px solid @glass_border;
+    color: @text_light;
+    border-radius: 4px;
+    padding: 4px 12px;
+    font-size: 12px;
+    transition: all 150ms ease;
+}
+
+button:hover {
+    background: linear-gradient(to bottom, rgba(79, 195, 247, 0.35), rgba(30, 136, 229, 0.25));
+    border-color: @aero_light;
+}
+
+button:active {
+    background: linear-gradient(to bottom, rgba(13, 71, 161, 0.5), rgba(30, 136, 229, 0.4));
+}
+
+button:disabled {
+    background: rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.3);
+    border-color: rgba(255,255,255,0.1);
+}
+
+button.suggested-action {
+    background: linear-gradient(to bottom, @aero_light, @aero_glass);
+    border: none;
+    color: white;
+    font-weight: bold;
+}
+
+button.suggested-action:hover {
+    background: linear-gradient(to bottom, #6dd5fa, #2196f3);
+}
+
+/* Entrées de texte */
+entry, textview {
+    background: rgba(0,0,0,0.2);
+    border: 1px solid rgba(79, 195, 247, 0.3);
+    color: @text_light;
+    border-radius: 4px;
+    padding: 4px 8px;
+}
+
+entry:focus, textview:focus {
+    border-color: @aero_light;
+    box-shadow: 0 0 6px @aero_glow;
+}
+
+/* Barres de défilement */
+scrollbar {
+    background: transparent;
+    border: none;
+}
+
+scrollbar slider {
+    background: rgba(79, 195, 247, 0.3);
+    border-radius: 4px;
+    min-width: 6px;
+    min-height: 30px;
+}
+
+scrollbar slider:hover {
+    background: rgba(79, 195, 247, 0.5);
+}
+
+scrollbar slider:active {
+    background: @aero_light;
+}
+
+/* Arrière-plan des listes */
+treeview, list, .list {
+    background: rgba(0,0,0,0.15);
+    color: @text_light;
+}
+
+treeview:selected, list row:selected {
+    background: @glass_bg;
+    color: white;
+}
+
+/* Barre de progression */
+progressbar {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+    border: none;
+}
+
+progressbar progress {
+    background: linear-gradient(to bottom, @aero_light, @aero_glass);
+    border-radius: 4px;
+}
+
+/* Barre d'échelle */
+scale trough {
+    background: rgba(255,255,255,0.1);
+    border-radius: 4px;
+}
+
+scale highlight {
+    background: linear-gradient(to bottom, @aero_light, @aero_glass);
+    border-radius: 4px;
+}
+
+scale slider {
+    background: @aero_light;
+    border: 2px solid white;
+    border-radius: 50%;
+    min-width: 14px;
+    min-height: 14px;
+}
+
+/* Infobulles */
+tooltip {
+    background: rgba(30, 30, 40, 0.9);
+    border: 1px solid rgba(79, 195, 247, 0.3);
+    border-radius: 6px;
+    color: @text_light;
+    padding: 6px 10px;
+}
+
+/* Menu contextuel */
+menu {
+    background: rgba(35, 35, 45, 0.95);
+    border: 1px solid @glass_border;
+    border-radius: 6px;
+    padding: 4px;
+}
+
+menuitem {
+    color: @text_light;
+    padding: 4px 12px;
+    border-radius: 3px;
+}
+
+menuitem:hover {
+    background: @glass_bg;
+}
+
+/* Séparateur */
+separator {
+    background: rgba(255,255,255,0.1);
+    min-height: 1px;
+}
+
+/* Notebook/onglets */
+notebook {
+    background: transparent;
+}
+
+notebook tab {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(79, 195, 247, 0.2);
+    border-bottom: none;
+    border-radius: 4px 4px 0 0;
+    padding: 4px 12px;
+    color: rgba(255,255,255,0.7);
+}
+
+notebook tab:checked {
+    background: rgba(30, 136, 229, 0.25);
+    border-color: @glass_border;
+    color: white;
+}
+
+/* Cadres */
+frame, .frame {
+    border: 1px solid rgba(79, 195, 247, 0.2);
+    border-radius: 6px;
+    padding: 2px;
+}

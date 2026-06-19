@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE wallpapers SYSTEM "gnome-wp-list.dtd">
+<wallpapers>
+  <wallpaper deleted="false">
+    <name>NextProjectOS Default</name>
+    <filename>~/.local/share/backgrounds/npos/default.svg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0066cc</pcolor>
+    <scolor>#4caf50</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>NextProjectOS Aero</name>
+    <filename>~/.local/share/backgrounds/npos/aero-glass.svg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#1e88e5</pcolor>
+    <scolor>#0d47a1</scolor>
+  </wallpaper>
+  <wallpaper deleted="false">
+    <name>NextProjectOS Dark</name>
+    <filename>~/.local/share/backgrounds/npos/dark-aero.svg</filename>
+    <options>zoom</options>
+    <shade_type>solid</shade_type>
+    <pcolor>#0d0d1a</pcolor>
+    <scolor>#1a1a2e</scolor>
+  </wallpaper>
+</wallpapers>
