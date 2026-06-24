@@ -119,6 +119,7 @@ chroot "$CHROOT_DIR" apt-get install -y --no-install-recommends \
     locales keyboard-configuration console-setup \
     nano \
     python3-pil plymouth-label plymouth-themes-spinfinity \
+    librsvg2-common \
     parted rsync dosfstools efibootmgr
 
 echo "📦 Installation de GRUB (paquets binaires pour cibles BIOS+UEFI)..."
@@ -177,6 +178,13 @@ mkdir -p "$CHROOT_DIR/etc/sudoers.d"
 echo "user ALL=(ALL) NOPASSWD:ALL" > "$CHROOT_DIR/etc/sudoers.d/npos-user"
 chmod 440 "$CHROOT_DIR/etc/sudoers.d/npos-user"
 
+# Permettre a l'utilisateur console de lancer X (startx)
+mkdir -p "$CHROOT_DIR/etc/X11"
+cat > "$CHROOT_DIR/etc/X11/Xwrapper.config" << XWRAP
+allowed_users=anybody
+needs_root_rights=yes
+XWRAP
+
 # Reconstruire l'initramfs avec live-boot
 echo "🔧 Reconstruction de l'initramfs avec live-boot..."
 chroot "$CHROOT_DIR" update-initramfs -u -k all
@@ -194,15 +202,30 @@ cat > "$CHROOT_DIR/usr/bin/npos-session" << 'SESSION'
 #!/bin/bash
 # NextProjectOS Session
 export PYTHONPATH="$PYTHONPATH:/opt/npos"
+LOG="$HOME/.npos-session.log"
 
-# Démarrer Openbox (gestionnaire de fenetres)
-openbox &
+echo "[npos-session] Starting at $(date)" > "$LOG"
 
-# Démarrer picom (compositeur Aero)
-picom --config /opt/npos/desktop/compositor/picom.conf &
+# Attendre que DISPLAY soit defini
+for i in 1 2 3 4 5; do
+    if [ -n "$DISPLAY" ]; then break; fi
+    sleep 0.5
+done
+echo "[npos-session] DISPLAY=$DISPLAY" >> "$LOG"
 
-# Démarrer le shell NPOS
-exec python3 /opt/npos/desktop/npshell/main.py
+# Demarrer Openbox (gestionnaire de fenetres)
+openbox >> "$LOG" 2>&1 &
+echo "[npos-session] Openbox started (PID=$!)" >> "$LOG"
+sleep 0.5
+
+# Demarrer picom (compositeur Aero)
+picom --config /opt/npos/desktop/compositor/picom.conf >> "$LOG" 2>&1 &
+echo "[npos-session] Picom started (PID=$!)" >> "$LOG"
+sleep 0.3
+
+# Demarrer le shell NPOS
+echo "[npos-session] Launching NPOS shell..." >> "$LOG"
+exec python3 /opt/npos/desktop/npshell/main.py >> "$LOG" 2>&1
 SESSION
 chmod +x "$CHROOT_DIR/usr/bin/npos-session"
 
@@ -220,8 +243,9 @@ chmod +x "$CHROOT_DIR/usr/bin/npos-startx"
 cat > "$CHROOT_DIR/etc/skel/.profile" << 'PROFILE'
 # NextProjectOS - Auto-start desktop on tty1
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-    echo "[NextProjectOS] Starting Aero desktop..."
-    startx /usr/bin/npos-startx -- :0 vt1
+    echo "[NextProjectOS] Starting Aero desktop..." > /tmp/npos-autostart.log 2>&1
+    startx /usr/bin/npos-startx >> /tmp/npos-autostart.log 2>&1
+    echo "[NextProjectOS] X session ended." >> /tmp/npos-autostart.log
 fi
 PROFILE
 
