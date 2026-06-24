@@ -423,7 +423,7 @@ mkdir -p "$ISO_STAGING/isolinux"
 # SquashFS du système racine
 echo "📦 Création du squashfs..."
 mksquashfs "$CHROOT_DIR" "$ISO_STAGING/live/filesystem.squashfs" \
-    -comp xz -e boot
+    -comp xz
 echo "   ✓ live/filesystem.squashfs créé"
 
 # Copier le noyau et initrd dans isolinux + live

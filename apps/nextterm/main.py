@@ -95,7 +95,7 @@ class NextTermWindow(Gtk.Window):
         self.notebook.set_tab_reorderable(scrolled, True)
 
         shell = os.environ.get("SHELL", "/bin/bash")
-        terminal.spawn_sync(
+        terminal.spawn_async(
             Vte.PtyFlags.DEFAULT,
             os.path.expanduser("~"),
             [shell],
@@ -103,7 +103,8 @@ class NextTermWindow(Gtk.Window):
             GLib.SpawnFlags.SEARCH_PATH,
             None,
             None,
-            None
+            -1,
+            None,
         )
 
         terminal.connect("child-exited", lambda t: self._close_tab(t))

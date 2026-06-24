@@ -23,6 +23,8 @@ class NPOSMenu(Gtk.Window):
         self.set_skip_taskbar_hint(True)
         self.set_keep_above(True)
         self.connect("draw", self._on_draw)
+        self.connect("key-press-event", self._on_key)
+        self.connect("focus-out-event", lambda w, e: w.hide())
 
     def _build_ui(self):
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
@@ -136,14 +138,20 @@ class NPOSMenu(Gtk.Window):
         box.set_margin_left(8)
         box.set_margin_right(8)
 
-        actions = [("⚙", "Paramètres"), ("⏻", "Arrêter")]
-        for icon, label in actions:
+        actions = [("⚙", "Paramètres", self._open_settings), ("⏻", "Arrêter", self._power_off)]
+        for icon, label, cb in actions:
             btn = Gtk.Button(label=f"{icon} {label}")
             btn.set_name("menu-action-btn")
             btn.set_relief(Gtk.ReliefStyle.NONE)
+            btn.connect("clicked", lambda b, c=cb: (self.hide(), c()))
             box.pack_start(btn, True, True, 4)
 
         return box
+
+    def _on_key(self, widget, event):
+        if event.keyval == Gdk.KEY_Escape:
+            self.hide()
+        return False
 
     def _on_draw(self, widget, cr):
         w = widget.get_allocated_width()
@@ -151,6 +159,14 @@ class NPOSMenu(Gtk.Window):
         bg = hex_to_rgb(self.config.get("Theme", "glass_color"))
         draw_glass_rect(cr, 0, 0, w, h, 0, bg, 0.92)
         draw_glass_highlight(cr, 0, 0, w, h, 0)
+
+    def _open_settings(self):
+        from desktop.npshell.utils import run_app
+        run_app("nextsettings")
+
+    def _power_off(self):
+        import subprocess
+        subprocess.Popen(["systemctl", "poweroff", "-i"], start_new_session=True)
 
     def _draw_avatar(self, widget, cr):
         w = widget.get_allocated_width()

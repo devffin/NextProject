@@ -57,18 +57,18 @@ class NPOSPanel(Gtk.Window):
         self.menu_btn.menu = self.menu
 
     def _on_menu_clicked(self, btn):
+        if self.menu.get_visible():
+            self.menu.hide()
+            return
         alloc = btn.get_allocation()
         x, y = btn.get_window().get_origin()
         pos = self.config.get("Panel", "position")
-        menu_y = y - self.menu.get_allocated_height() if pos == "bottom" else y + alloc.height
-        self.menu.popup_at_rect(
-            btn.get_window(),
-            Gdk.Rectangle(0, 0, alloc.width, alloc.height),
-            Gdk.Rectangle(x, menu_y, 400, 500),
-            Gdk.Gravity.NORTH_WEST,
-            Gdk.Gravity.NORTH_WEST,
-            None,
-        )
+        if pos == "bottom":
+            menu_y = y - self.menu.get_allocated_height()
+        else:
+            menu_y = y + alloc.height
+        self.menu.move(x, menu_y)
+        self.menu.show_all()
 
     def _build_search(self):
         self.search_entry = Gtk.SearchEntry()
