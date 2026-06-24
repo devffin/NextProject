@@ -71,6 +71,7 @@ class NPOSMenu(Gtk.Window):
             ("nextcalc", "Calculatrice"),
             ("nextmedia", "Musique"),
             ("nextsettings", "Paramètres"),
+            ("nextinstaller", "Installateur"),
         ]
         for app_id, label in all_apps:
             row = MenuAppButton(app_id, label)

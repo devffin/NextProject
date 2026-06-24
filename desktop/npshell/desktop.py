@@ -68,6 +68,7 @@ class NPOSDesktop(Gtk.Window):
             ("nextcalc", "Calculatrice"),
             ("nextmedia", "Musique"),
             ("nextsettings", "Paramètres"),
+            ("nextinstaller", "Installateur"),
         ]
 
         icon_size = self.config.getint("Desktop", "icon_size")

@@ -118,7 +118,9 @@ chroot "$CHROOT_DIR" apt-get install -y --no-install-recommends \
     plymouth plymouth-themes \
     locales keyboard-configuration console-setup \
     nano \
-    python3-pil plymouth-label plymouth-themes-spinfinity
+    python3-pil plymouth-label plymouth-themes-spinfinity \
+    parted rsync dosfstools \
+    grub-pc grub-efi efibootmgr
 
 # Configuration des locales (français)
 echo "🌐 Configuration des locales fr_FR.UTF-8..."
@@ -189,6 +191,9 @@ cat > "$CHROOT_DIR/usr/bin/npos-session" << 'SESSION'
 # NextProjectOS Session
 export PYTHONPATH="$PYTHONPATH:/opt/npos"
 
+# Démarrer Openbox (gestionnaire de fenetres)
+openbox &
+
 # Démarrer picom (compositeur Aero)
 picom --config /opt/npos/desktop/compositor/picom.conf &
 
@@ -206,26 +211,118 @@ exec npos-session
 STARTX
 chmod +x "$CHROOT_DIR/usr/bin/npos-startx"
 
-# Configurer .bashrc pour lancer X automatiquement sur tty1
-cat > "$CHROOT_DIR/etc/skel/.bashrc" << 'BASHRC'
+# Configurer .profile pour lancer X automatiquement sur tty1
+# (les shells de connexion lisent .profile, pas .bashrc)
+cat > "$CHROOT_DIR/etc/skel/.profile" << 'PROFILE'
 # NextProjectOS - Auto-start desktop on tty1
 if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
-    echo "[NextProjectOS] Starting desktop environment..."
+    echo "[NextProjectOS] Starting Aero desktop..."
     startx /usr/bin/npos-startx -- :0 vt1
 fi
-BASHRC
+PROFILE
 
 # Copier dans le home de l'utilisateur live
 if [ -d "$CHROOT_DIR/home/user" ]; then
-    cp "$CHROOT_DIR/etc/skel/.bashrc" "$CHROOT_DIR/home/user/.bashrc"
-    chown 1000:1000 "$CHROOT_DIR/home/user/.bashrc" 2>/dev/null || true
+    cp "$CHROOT_DIR/etc/skel/.profile" "$CHROOT_DIR/home/user/.profile"
+    chown 1000:1000 "$CHROOT_DIR/home/user/.profile" 2>/dev/null || true
 fi
 
 # Configurer Openbox comme WM de base
 mkdir -p "$CHROOT_DIR/etc/xdg/openbox"
+cat > "$CHROOT_DIR/etc/xdg/openbox/rc.xml" << 'OBCONF'
+<?xml version="1.0" encoding="UTF-8"?>
+<openbox_config xmlns="http://openbox.org/3.4/rc">
+  <theme>
+    <name>NextAero</name>
+    <titleLayout>NLIMC</titleLayout>
+    <keepBorder>yes</keepBorder>
+    <animateIconify>no</animateIconify>
+    <font place="ActiveWindow">
+      <name>Cantarell</name>
+      <size>10</size>
+      <weight>bold</weight>
+    </font>
+    <font place="InactiveWindow">
+      <name>Cantarell</name>
+      <size>10</size>
+      <weight>normal</weight>
+    </font>
+    <font place="MenuHeader">
+      <name>Cantarell</name>
+      <size>10</size>
+      <weight>bold</weight>
+    </font>
+    <font place="MenuItem">
+      <name>Cantarell</name>
+      <size>10</size>
+      <weight>normal</weight>
+    </font>
+    <font place="ActiveOnScreenDisplay">
+      <name>Cantarell</name>
+      <size>10</size>
+      <weight>normal</weight>
+    </font>
+    <font place="InactiveOnScreenDisplay">
+      <name>Cantarell</name>
+      <size>10</size>
+      <weight>normal</weight>
+    </font>
+  </theme>
+  <desktops>
+    <number>1</number>
+    <firstdesk>1</firstdesk>
+    <names><name>Principal</name></names>
+  </desktops>
+  <resistance>
+    <strength>10</strength>
+    <screen_edge_strength>20</screen_edge_strength>
+  </resistance>
+  <focus>
+    <focusNew>yes</focusNew>
+    <followMouse>no</followMouse>
+    <focusLast>yes</focusLast>
+    <underMouse>no</underMouse>
+    <focusDelay>200</focusDelay>
+    <raiseOnFocus>no</raiseOnFocus>
+  </focus>
+  <placement>
+    <policy>UnderMouse</policy>
+    <center>yes</center>
+    <monitor>Primary</monitor>
+    <primaryMonitor>1</primaryMonitor>
+  </placement>
+  <mouse>
+    <context menu="Root">
+      <mousebutton button="Right" action="ShowMenu" root="true"/>
+    </context>
+    <context menu="Client">
+      <mousebutton button="Left" action="Raise"/>
+      <mousebutton button="Middle" action="Iconify"/>
+      <mousebutton button="Right" action="Focus"/>
+    </context>
+  </mouse>
+  <menu>
+    <file>system-menu.xml</file>
+    <hideDelay>200</hideDelay>
+    <middle>no</middle>
+    <submenuShowDelay>100</submenuShowDelay>
+    <showIcons>yes</showIcons>
+    <generate>yes</generate>
+  </menu>
+  <applications>
+    <application class="*">
+      <decor>yes</decor>
+      <focus>yes</focus>
+      <desktop>1</desktop>
+      <layer>normal</layer>
+    </application>
+  </applications>
+</openbox_config>
+OBCONF
+
 cat > "$CHROOT_DIR/etc/xdg/openbox/autostart" << 'OBMENU'
-# NextProjectOS Openbox Autostart
-npos-session &
+# NextProjectOS Openbox Autostart (minimal - npos-session demarre openbox)
+true
 OBMENU
 
 # Créer un .desktop pour le démarrage automatique
@@ -238,6 +335,18 @@ Exec=npos-session
 Comment=Environnement de bureau Aero
 X-GNOME-Autostart-enabled=true
 AUTOSTART
+
+# .desktop pour l'installateur
+cat > "$CHROOT_DIR/usr/share/applications/nextinstaller.desktop" << 'INSTALLERDESK'
+[Desktop Entry]
+Type=Application
+Name=NextInstaller
+Comment=Installer NextProjectOS sur disque dur
+Exec=python3 -m apps.nextinstaller.main
+Icon=drive-harddisk
+Terminal=false
+Categories=System;
+INSTALLERDESK
 
 # Étape 6: Configuration du thème par défaut
 echo "🎨 Configuration du thème..."

@@ -62,6 +62,7 @@ class NPOSDock(Gtk.Window):
             ("nextcalc", "Calculatrice"),
             ("nextmedia", "Musique"),
             ("nextsettings", "Paramètres"),
+            ("nextinstaller", "Installateur"),
         ]
 
         for app_id, label in apps:

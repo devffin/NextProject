@@ -82,6 +82,7 @@ class NextLauncherWindow(Gtk.Window):
             ("nextcalc", "🧮", "Calculatrice", "Calculs mathématiques"),
             ("nextmedia", "🎵", "Musique", "Lecteur audio"),
             ("nextsettings", "⚙", "Paramètres", "Configuration du système"),
+            ("nextinstaller", "💿", "Installateur", "Installer NPOS sur disque dur"),
         ]
 
         for app_id, icon, name, desc in apps:
