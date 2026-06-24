@@ -28,10 +28,10 @@ if [ "$EUID" -ne 0 ]; then
 fi
 
 # Vérification des outils requis
-for cmd in debootstrap mksquashfs xorriso; do
+for cmd in debootstrap mksquashfs xorriso isohybrid; do
     if ! command -v $cmd &> /dev/null; then
         echo "❌ $cmd n'est pas installé."
-        echo "   Installez-le d'abord : sudo apt install debootstrap squashfs-tools xorriso"
+        echo "   Installez-le d'abord : sudo apt install debootstrap squashfs-tools xorriso syslinux-utils"
         exit 1
     fi
 done
@@ -127,7 +127,7 @@ chroot "$CHROOT_DIR" locale-gen
 chroot "$CHROOT_DIR" update-locale LANG=fr_FR.UTF-8 LANGUAGE=fr_FR.UTF-8 LC_ALL=fr_FR.UTF-8
 
 # Configuration du clavier (AZERTY français)
-echo "⌨️  Configuration du clavier AZERTY français..."
+echo "Configuration du clavier AZERTY francais..."
 cat > "$CHROOT_DIR/etc/default/keyboard" << KEYB
 # NextProjectOS - Clavier AZERTY français
 XKBMODEL=pc105
@@ -136,6 +136,17 @@ XKBVARIANT=
 XKBOPTIONS=terminate:ctrl_alt_bksp
 BACKSPACE=guess
 KEYB
+
+# Police console UTF-8 (support des accents)
+echo "Configuration de la police console UTF-8..."
+cat > "$CHROOT_DIR/etc/default/console-setup" << CONSFONT
+# NextProjectOS - Console UTF-8
+ACTIVE_CONSOLES="/dev/tty[1-6]"
+CHARMAP="UTF-8"
+CODESET="Lat2"
+FONTFACE="Terminus"
+FONTSIZE="16x32"
+CONSFONT
 
 # Configuration du fuseau horaire Europe/Paris
 echo "🕐 Configuration du fuseau horaire Europe/Paris..."
@@ -196,10 +207,10 @@ STARTX
 chmod +x "$CHROOT_DIR/usr/bin/npos-startx"
 
 # Configurer .bashrc pour lancer X automatiquement sur tty1
-cat > "$CHROOT_DIR/etc/skel/.bashrc" << BASHRC
-# NextProjectOS - Lancement automatique du bureau
-if [ -z "\$DISPLAY" ] && [ "\$(tty)" = "/dev/tty1" ]; then
-    echo "🚀 Démarrage de NextProjectOS..."
+cat > "$CHROOT_DIR/etc/skel/.bashrc" << 'BASHRC'
+# NextProjectOS - Auto-start desktop on tty1
+if [ -z "$DISPLAY" ] && [ "$(tty)" = "/dev/tty1" ]; then
+    echo "[NextProjectOS] Starting desktop environment..."
     startx /usr/bin/npos-startx -- :0 vt1
 fi
 BASHRC
@@ -376,33 +387,33 @@ MENU COLOR tabmsg      31;40     #4fc3f7 #000000 std
 MENU COLOR unsel       37;44     #bbbbbb #0d47a1 std
 
 LABEL npos
-    MENU LABEL ^Démarrer NextProjectOS
+    MENU LABEL ^1) Boot NextProjectOS (AZERTY - Francais)
     MENU DEFAULT
     KERNEL /live/vmlinuz
     APPEND initrd=/live/initrd.img boot=live live-media-path=/live quiet splash
 
 LABEL npos-safe
-    MENU LABEL ^Mode sans échec
+    MENU LABEL ^2) Mode sans echec (nomodeset)
     KERNEL /live/vmlinuz
     APPEND initrd=/live/initrd.img boot=live live-media-path=/live nomodeset xforcevesa
 
 LABEL npos-en
-    MENU LABEL Boot NextProjectOS (^English)
+    MENU LABEL ^3) Boot NextProjectOS (QWERTY - English)
     KERNEL /live/vmlinuz
     APPEND initrd=/live/initrd.img boot=live live-media-path=/live quiet splash locale=en_US.UTF-8
 
 LABEL local
-    MENU LABEL ^Démarrer depuis le disque dur
+    MENU LABEL ^4) Boot from local disk
     COM32 chain.c32
     APPEND hd0
 
 LABEL memtest
-    MENU LABEL Test ^mémoire (Memtest86+)
+    MENU LABEL ^5) Memory test (Memtest86+)
     KERNEL /live/memtest
 ISOCFG
 
 # Création de l'ISO
-echo "💿 Génération de l'ISO..."
+echo "Generation de l'ISO..."
 xorriso -as mkisofs \
     -iso-level 3 \
     -full-iso9660-filenames \
@@ -416,31 +427,35 @@ xorriso -as mkisofs \
     -boot-info-table \
     "$ISO_STAGING"
 
+# Rendre l'ISO bootable en USB (isohybrid)
+echo "Preparation du boot USB..."
+if command -v isohybrid &>/dev/null; then
+    isohybrid "$OUTPUT_DIR/NextProjectOS.iso" 2>/dev/null && echo "   ✓ isohybrid OK"
+fi
+
 echo ""
-echo "╔══════════════════════════════════════════════╗"
-echo "║   ✅ ISO créée avec succès !                ║"
-echo "╠══════════════════════════════════════════════╣"
-echo "║                                            ║"
-echo "║   📁 $OUTPUT_DIR/NextProjectOS.iso"  
-echo "║                                            ║"
-echo "║   🌐 Langue    : Français (fr_FR.UTF-8)    ║"
-echo "║   ⌨️  Clavier   : AZERTY français           ║"
-echo "║   🕐 Fuseau    : Europe/Paris              ║"
-echo "║   👤 Utilisateur: user / user              ║"
-echo "║                                            ║"
-echo "╠══════════════════════════════════════════════╣"
-echo "║   💿 Graver sur une clé USB :              ║"
-echo "║   • Linux  : dd if=...iso of=/dev/sdX     ║"
-echo "║   • Windows: Rufus (https://rufus.ie)     ║"
-echo "║   • Mac    : balenaEtcher                  ║"
-echo "╠══════════════════════════════════════════════╣"
-echo "║   🔄 Taille du build :                      ║"
+echo "+----------------------------------------------------+"
+echo "| ISO creee avec succes !                            |"
+echo "|                                                    |"
+echo "| Fichier: $OUTPUT_DIR/NextProjectOS.iso"  
+echo "|                                                    |"
+echo "| Configuration par defaut dans le Live :            |"
+echo "| - Langue    : Francais (fr_FR.UTF-8)              |"
+echo "| - Clavier   : AZERTY francais                     |"
+echo "| - Fuseau    : Europe/Paris                        |"
+echo "| - Utilisateur: user / user                        |"
+echo "|                                                    |"
+echo "| Pour graver sur une cle USB :                     |"
+echo "| - Linux  : dd if=...iso of=/dev/sdX bs=4M        |"
+echo "| - Windows: Rufus (https://rufus.ie)              |"
+echo "| - Mac    : balenaEtcher                           |"
+echo "|                                                    |"
 ISO_SIZE=$(du -sh "$OUTPUT_DIR/NextProjectOS.iso" 2>/dev/null | cut -f1)
-[ -n "$ISO_SIZE" ] && echo "║      $ISO_SIZE" || echo "║      (inconnu)"
-echo "╚══════════════════════════════════════════════╝"
+[ -n "$ISO_SIZE" ] && echo "| Taille : $ISO_SIZE" || echo "| Taille : (inconnue)"
+echo "+----------------------------------------------------+"
 
 # Nettoyage final
-echo "🧹 Nettoyage des fichiers temporaires..."
+echo "Nettoyage des fichiers temporaires..."
 cleanup_mounts "$CHROOT_DIR" 2>/dev/null
 rm -rf "$WORK_DIR" 2>/dev/null || true
 trap - ERR INT TERM
