@@ -120,7 +120,7 @@ chroot "$CHROOT_DIR" apt-get install -y --no-install-recommends \
     nano \
     python3-pil plymouth-label plymouth-themes-spinfinity \
     parted rsync dosfstools \
-    grub-pc grub-efi efibootmgr
+    grub-pc grub-efi-amd64 efibootmgr
 
 # Configuration des locales (français)
 echo "🌐 Configuration des locales fr_FR.UTF-8..."
