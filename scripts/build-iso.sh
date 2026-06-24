@@ -42,26 +42,24 @@ echo ""
 # Fonction de nettoyage d'urgence (appelée en cas d'erreur)
 cleanup_mounts() {
     local dir="$1"
-    for m in "$dir/dev/pts" "$dir/dev" "$dir/proc" "$dir/sys"; do
-        mountpoint -q "$m" 2>/dev/null && umount -lf "$m" 2>/dev/null
-    done
+    [ -z "$dir" ] && return
+    # Démonter silencieusement tout ce qui est monté (ignorer les erreurs)
+    umount -lf "$dir/dev/pts" 2>/dev/null || true
+    umount -lf "$dir/dev" 2>/dev/null || true
+    umount -lf "$dir/proc" 2>/dev/null || true
+    umount -lf "$dir/sys" 2>/dev/null || true
 }
 
 # Nettoyage avant de commencer (démonte les vestiges d'une exécution précédente)
 echo "🧹 Nettoyage du répertoire de travail..."
-if [ -d "$CHROOT_DIR" ]; then
-    cleanup_mounts "$CHROOT_DIR"
-fi
-rm -rf "$WORK_DIR" 2>/dev/null || {
-    # Si rm échoue, forcer le démontage et réessayer
-    sleep 1
-    cleanup_mounts "$CHROOT_DIR"
-    rm -rf "$WORK_DIR" 2>/dev/null || true
-}
+# Démontage des vestiges d'une exécution précédente (si existants)
+[ -d "$CHROOT_DIR" ] && cleanup_mounts "$CHROOT_DIR"
+# Suppression silencieuse du répertoire de travail précédent
+rm -rf "$WORK_DIR" 2>/dev/null || true
 mkdir -p "$CHROOT_DIR" "$OUTPUT_DIR" "$WORK_DIR"
 
-# Piège pour nettoyer en cas d'erreur pendant le script
-trap 'echo "⚠️  Nettoyage après erreur..."; cleanup_mounts "$CHROOT_DIR"; rm -rf "$WORK_DIR" 2>/dev/null; exit 1' ERR INT TERM
+# Piège pour nettoyer en cas d'erreur (sans faire echo pour éviter les boucles)
+trap 'cleanup_mounts "$CHROOT_DIR" 2>/dev/null; rm -rf "$WORK_DIR" 2>/dev/null; exit 1' ERR INT TERM
 
 # Étape 1: Debootstrap (système de base)
 echo "📦 Création du système de base (Debian)..."
