@@ -139,7 +139,9 @@ chroot "$CHROOT_DIR" useradd -m -G sudo,audio,video,input -s /bin/bash user 2>/d
 echo "user:user" | chroot "$CHROOT_DIR" chpasswd
 
 # Configuration sudo sans mot de passe pour user
+mkdir -p "$CHROOT_DIR/etc/sudoers.d"
 echo "user ALL=(ALL) NOPASSWD:ALL" > "$CHROOT_DIR/etc/sudoers.d/npos-user"
+chmod 440 "$CHROOT_DIR/etc/sudoers.d/npos-user"
 
 # Reconstruire l'initramfs avec live-boot
 echo "🔧 Reconstruction de l'initramfs avec live-boot..."
@@ -186,8 +188,10 @@ fi
 BASHRC
 
 # Copier dans le home de l'utilisateur live
-cp "$CHROOT_DIR/etc/skel/.bashrc" "$CHROOT_DIR/home/user/.bashrc"
-chown 1000:1000 "$CHROOT_DIR/home/user/.bashrc"
+if [ -d "$CHROOT_DIR/home/user" ]; then
+    cp "$CHROOT_DIR/etc/skel/.bashrc" "$CHROOT_DIR/home/user/.bashrc"
+    chown 1000:1000 "$CHROOT_DIR/home/user/.bashrc" 2>/dev/null || true
+fi
 
 # Configurer Openbox comme WM de base
 mkdir -p "$CHROOT_DIR/etc/xdg/openbox"
@@ -282,9 +286,9 @@ for f in $ISOLINUX_MODULES; do
 done
 
 # Copier memtest si disponible
-if [ -f "$CHROOT_DIR/boot/memtest86+"*.bin ]; then
-    cp "$CHROOT_DIR/boot/memtest86+"*.bin "$ISO_STAGING/live/memtest"
-fi
+for m in "$CHROOT_DIR/boot/memtest86+"*.bin "$CHROOT_DIR/boot/memtest".bin; do
+    [ -f "$m" ] && cp "$m" "$ISO_STAGING/live/memtest" && break
+done
 
 # Générer un splash screen pour le menu de boot
 echo "🖼️  Génération du splash screen du boot..."
