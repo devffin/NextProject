@@ -1,6 +1,6 @@
 #!/bin/bash
+# DEPRECATED - Utilisez pluto: sudo bash scripts/npos.sh build-iso
 # NextProjectOS - Construction d'une ISO live
-# Basé sur Debian Live
 
 set -e
 

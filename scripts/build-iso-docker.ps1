@@ -84,7 +84,7 @@ Write-Host ""
     -v "${OutputDir}:/opt/npos/iso/output" `
     --rm `
     $ImageName `
-    bash -c "cd /opt/npos && bash scripts/build-iso.sh --non-interactive" 2>&1
+    bash -c "cd /opt/npos && bash scripts/npos.sh build-iso --non-interactive" 2>&1
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host ""

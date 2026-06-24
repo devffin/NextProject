@@ -23,4 +23,4 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 WORKDIR /opt/npos
 
 # Le répertoire /opt/npos doit être monté depuis l'hôte
-# Lancement : docker run --rm -v <projet>:/opt/npos npos-builder bash scripts/build-iso.sh --non-interactive
+# Lancement : docker run --rm -v <projet>:/opt/npos npos-builder bash scripts/npos.sh build-iso --non-interactive

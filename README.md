@@ -1,99 +1,70 @@
 # NextProjectOS (NPOS)
 
-**Un OS Linux moderne avec un environnement de bureau style Aero personnalisable**
+**Un OS Linux moderne avec un environnement de bureau XFCE4 pré-configuré style Aero**
 
-NextProjectOS est une distribution Linux proposant un environnement de bureau "Aero" transparent, inspiré de Windows 7, entièrement personnalisable et accompagné d'applications natives faites main.
+NextProjectOS est une distribution Linux utilisant XFCE4 comme environnement de bureau, pré-configuré avec un thème "Aero" transparent (inspiré de Windows 7), picom pour les effets de flou/reflets, et des applications natives faites main.
 
-## ✨ Fonctionnalités
+## Fonctionnalites
 
-- **Bureau Aero** — Transparence, flou, reflets, animations fluides
-- **Personnalisable** — Thèmes, couleurs, fonds d'écran, icônes
-- **Applications natives** — Explorateur de fichiers, terminal, éditeur, calculatrice, musique, paramètres, lanceur
-- **Performant** — Léger, rapide, optimisé pour le matériel moderne
-- **Open Source** — Sous licence MIT
+- **Bureau XFCE4** — Pre-configure avec theme Aero, picom (flou, transparence, ombres)
+- **Personnalisable** — Themes, couleurs, fonds d'ecran, icones
+- **Applications natives** — Explorateur de fichiers, terminal, editeur, calculatrice, musique, parametres, lanceur, installateur
+- **ISO live** — Bootable, installable sur disque dur via NextInstaller
+- **Performant** — XFCE4 leger + picom pour les effets
 
-## 🖥️ Composants
+## Composants
 
 | Composant | Description |
 |-----------|-------------|
-| `desktop/npshell/` | Environnement de bureau (panneau, dock, bureau, menu) |
-| `desktop/theme/aero/` | Thème Aero (GTK3/4, Metacity, Openbox) |
+| `desktop/theme/aero/` | Theme Aero GTK3/4 pour XFCE4 |
 | `desktop/compositor/` | Configuration picom pour effets Aero |
-| `desktop/wallpaper/` | Fond d'écran style Windows 7 |
-| `apps/` | Applications natives |
-| `scripts/` | Scripts d'installation et de construction |
+| `desktop/wallpaper/` | Fond d'ecran Aero |
+| `apps/` | Applications natives (nextfile, nextterm, etc.) |
+| `config/` | Configuration par defaut |
+| `scripts/npos.sh` | Script unique tout-en-un |
 
-## 🚀 Installation rapide
-
-```bash
-# Sur une distribution Linux existante (Debian/Ubuntu recommandé)
-sudo bash scripts/install.sh
-```
-
-## 📦 Construire une ISO
+## Installation rapide
 
 ```bash
-sudo bash scripts/build-iso.sh
+# Sur Debian/Ubuntu existant
+sudo bash scripts/npos.sh install
 ```
 
-## 🧩 Applications incluses
+## Construire l'ISO
 
-| Application | Description |
-|-------------|-------------|
-| **NextFile** | Explorateur de fichiers avec onglets et aperçu |
-| **NextTerm** | Terminal avec thème Aero |
-| **NextEdit** | Éditeur de texte avec coloration syntaxique |
-| **NextCalc** | Calculatrice scientifique |
-| **NextMedia** | Lecteur audio/vidéo |
-| **NextSettings** | Centre de configuration système |
-| **NextLauncher** | Lanceur d'applications style Aero |
-
-## 🎨 Personnalisation
-
-- **Thèmes** : `~/.local/share/themes/NextAero/`
-- **Icônes** : `~/.local/share/icons/NPIcons/`
-- **Fonds d'écran** : `~/.local/share/backgrounds/npos/`
-- **Configuration** : `~/.config/npos/npos.conf`
-
-## 📦 Construire l'ISO sur Windows (via Docker)
-
-**Prérequis :** Docker Desktop pour Windows installé
-- https://www.docker.com/products/docker-desktop/
-
-**Méthode 1 — Double-clic (recommandé) :**
-```cmd
-double-clic sur build.bat
+```bash
+# Sur Linux (Debian/Ubuntu recommande)
+sudo bash scripts/npos.sh build-iso
 ```
 
-**Méthode 2 — PowerShell :**
 ```powershell
+# Sur Windows (via Docker)
 .\scripts\build-iso-docker.ps1
 ```
 
-**Méthode 3 — Manuellement :**
-```bash
-# Construire l'image
-docker build -t npos-builder .
+## Applications incluses
 
-# Lancer la construction
-docker run --rm -v "$(pwd):/opt/npos" npos-builder bash scripts/build-iso.sh --non-interactive
+| Application | Description |
+|-------------|-------------|
+| **NextFile** | Explorateur de fichiers |
+| **NextTerm** | Terminal avec theme Aero |
+| **NextEdit** | Editeur de texte avec coloration syntaxique |
+| **NextCalc** | Calculatrice scientifique |
+| **NextMedia** | Lecteur audio/video |
+| **NextSettings** | Centre de configuration systeme |
+| **NextLauncher** | Lanceur d'applications |
+| **NextInstaller** | Installateur pour disque dur |
+
+## Script unique
+
+```bash
+bash scripts/npos.sh build-iso   # Construire l'ISO live
+bash scripts/npos.sh install     # Installer sur le systeme
+bash scripts/npos.sh desktop     # Installer theme/icones/wallpaper
+bash scripts/npos.sh first-boot  # Config post-installation
+bash scripts/npos.sh uninstall   # Supprimer NPOS
 ```
 
-L'ISO sera créée dans `iso/output/NextProjectOS.iso`.
-
-Pour graver sur une clé USB sous Windows, utilisez **Rufus** : https://rufus.ie
-
-## 📋 Prérequis
-
-### Linux (pour exécuter le bureau)
-- Debian 12+, Ubuntu 22.04+, Fedora 38+, Arch Linux
-- Python 3.10+
-- GTK 3.24+
-- picom 10.2+
-
-### Windows (pour construire l'ISO)
-- Docker Desktop
-
-## 📄 Licence
+## Licence
 
 MIT

@@ -1,6 +1,6 @@
 #!/bin/bash
+# DEPRECATED - Utilisez pluto: bash scripts/npos.sh install
 # NextProjectOS - Script d'installation
-# Installe l'environnement de bureau Aero et les applications
 
 set -e
 

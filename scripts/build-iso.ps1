@@ -1,6 +1,6 @@
 # build-iso.ps1
 # Construction de l'ISO NextProjectOS via WSL 2
-# Utilise Ubuntu/Debian dans WSL pour exécuter build-iso.sh
+# Utilise Ubuntu/Debian dans WSL pour exécuter npos.sh build-iso
 
 $ErrorActionPreference = "Stop"
 $ProjectRoot = Split-Path -Parent (Split-Path -Parent $PSCommandPath)
@@ -96,7 +96,7 @@ Write-Host "🚀 Lancement de la construction de l'ISO..." -ForegroundColor Cyan
 Write-Host "   (Cela peut prendre 20-45 minutes selon votre connexion)" -ForegroundColor Yellow
 Write-Host ""
 
-$buildCmd = "cd $wslProjectDir && sudo bash scripts/build-iso.sh --non-interactive"
+$buildCmd = "cd $wslProjectDir && sudo bash scripts/npos.sh build-iso --non-interactive"
 & wsl.exe -d $WSLDistro -e bash -c $buildCmd
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Échec de la construction de l'ISO." -ForegroundColor Red

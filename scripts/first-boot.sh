@@ -1,6 +1,6 @@
 #!/bin/bash
-# NextProjectOS - Premier démarrage
-# Configurations initiales pour l'utilisateur
+# DEPRECATED - Utilisez pluto: bash scripts/npos.sh first-boot
+# NextProjectOS - Premier demarrage
 
 echo ""
 echo "╔══════════════════════════════════════════════╗"

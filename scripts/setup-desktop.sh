@@ -1,6 +1,6 @@
 #!/bin/bash
+# DEPRECATED - Utilisez pluto: bash scripts/npos.sh desktop
 # NextProjectOS - Configuration rapide du bureau Aero
-# Pour les utilisateurs qui veulent configurer manuellement
 
 set -e
 
