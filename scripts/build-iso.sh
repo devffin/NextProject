@@ -119,8 +119,10 @@ chroot "$CHROOT_DIR" apt-get install -y --no-install-recommends \
     locales keyboard-configuration console-setup \
     nano \
     python3-pil plymouth-label plymouth-themes-spinfinity \
-    parted rsync dosfstools \
-    grub-pc grub-efi-amd64 efibootmgr
+    parted rsync dosfstools efibootmgr
+
+echo "📦 Installation de GRUB (avec recommandations pour les cibles BIOS+UEFI)..."
+chroot "$CHROOT_DIR" apt-get install -y grub-pc grub-efi-amd64
 
 # Configuration des locales (français)
 echo "🌐 Configuration des locales fr_FR.UTF-8..."
