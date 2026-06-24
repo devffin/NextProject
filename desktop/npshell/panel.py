@@ -24,6 +24,11 @@ class NPOSPanel(Gtk.Window):
         self.set_accept_focus(False)
         self.set_resizable(False)
         self.stick()
+        self.set_app_paintable(True)
+        screen = Gdk.Screen.get_default()
+        visual = screen.get_rgba_visual()
+        if visual:
+            self.set_visual(visual)
 
         screen = Gdk.Screen.get_default()
         self.monitor = screen.get_monitor_geometry(0)
@@ -61,13 +66,17 @@ class NPOSPanel(Gtk.Window):
             self.menu.hide()
             return
         alloc = btn.get_allocation()
-        x, y = btn.get_window().get_origin()
+        win_x, win_y = btn.get_window().get_origin()
         pos = self.config.get("Panel", "position")
+        menu_w, menu_h = self.menu.get_size()
+        if menu_w <= 1 or menu_h <= 1:
+            menu_h = 500
+        menu_x = win_x
         if pos == "bottom":
-            menu_y = y - self.menu.get_allocated_height()
+            menu_y = win_y - menu_h
         else:
-            menu_y = y + alloc.height
-        self.menu.move(x, menu_y)
+            menu_y = win_y + alloc.height
+        self.menu.move(menu_x, menu_y)
         self.menu.show_all()
 
     def _build_search(self):

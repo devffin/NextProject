@@ -45,6 +45,11 @@ class NPOSDock(Gtk.Window):
             self.set_default_size(dock_height, dock_width)
             self.move(monitor.width - dock_height, (monitor.height - dock_width) // 2)
 
+        self.set_app_paintable(True)
+        screen = Gdk.Screen.get_default()
+        visual = screen.get_rgba_visual()
+        if visual:
+            self.set_visual(visual)
         self.connect("draw", self._on_draw)
 
     def _build_ui(self):

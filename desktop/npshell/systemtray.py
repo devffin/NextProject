@@ -17,7 +17,9 @@ class NPOSSystemTray(Gtk.Box):
         self._build_power()
         self._apply_style()
 
-        GLib.timeout_add_seconds(30, self._update_clock)
+        now = datetime.datetime.now()
+        delay = 60 - now.second
+        GLib.timeout_add_seconds(delay, self._update_clock)
 
     def _build_clock(self):
         self.clock_box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=0)

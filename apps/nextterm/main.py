@@ -20,6 +20,7 @@ class NextTermWindow(Gtk.Window):
         self.set_position(Gtk.WindowPosition.CENTER)
         self._setup_style()
         self._build_ui()
+        self.connect("key-press-event", self._on_keyboard_shortcut)
         self.show_all()
 
     def _setup_style(self):

@@ -1,7 +1,7 @@
 import gi
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
-from gi.repository import Gtk, Gdk, GLib, Pango, cairo
+from gi.repository import Gtk, Gdk, GLib, Pango, cairo, GdkPixbuf
 import os
 import math
 
@@ -26,6 +26,7 @@ class NPOSDesktop(Gtk.Window):
         self.set_resizable(False)
         self.stick()
         self.fullscreen()
+        self.set_app_paintable(True)
 
         self.connect("draw", self._on_draw)
         self.connect("button-press-event", self._on_click)
@@ -47,10 +48,10 @@ class NPOSDesktop(Gtk.Window):
     def _load_wallpaper(self):
         wp = self.config.get("Desktop", "wallpaper")
         if os.path.exists(wp):
-            self.wallpaper = Gdk.pixbuf_new_from_file(wp)
+            self.wallpaper = GdkPixbuf.Pixbuf.new_from_file(wp)
             self.wallpaper = self.wallpaper.scale_simple(
                 self.screen_width, self.screen_height,
-                Gdk.InterpType.BILINEAR,
+                GdkPixbuf.InterpType.BILINEAR,
             )
         else:
             self.wallpaper = None
@@ -74,10 +75,11 @@ class NPOSDesktop(Gtk.Window):
         icon_size = self.config.getint("Desktop", "icon_size")
         padding = 20
         x = padding
+        y = self.screen_height - icon_size - 160
 
         for app_id, label in apps:
             icon = DesktopIcon(app_id, label, icon_size)
-            self.fixed.put(icon, x, self.screen_height - icon_size - 80)
+            self.fixed.put(icon, x, y)
             x += icon_size + padding
             self.icons.append(icon)
 
@@ -168,7 +170,7 @@ class DesktopIcon(Gtk.EventBox):
         )
         if os.path.exists(icon_path):
             try:
-                pixbuf = Gdk.pixbuf_new_from_file_at_size(icon_path, w - 8, h - 8)
+                pixbuf = GdkPixbuf.Pixbuf.new_from_file_at_size(icon_path, w - 8, h - 8)
                 Gdk.cairo_set_source_pixbuf(cr, pixbuf, (w - pixbuf.get_width()) / 2, (h - pixbuf.get_height()) / 2)
                 cr.paint()
                 return

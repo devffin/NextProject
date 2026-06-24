@@ -66,4 +66,4 @@ class TaskbarButton(Gtk.Button):
         if self.win.is_active():
             self.win.minimize()
         else:
-            self.win.activate(int(Gdk.CURRENT_TIME))
+            self.win.activate(0)

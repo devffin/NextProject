@@ -1,20 +1,37 @@
 import os
 import subprocess
+import sys
 import cairo
 import math
 
+NPOS_DIR = "/opt/npos"
+
 
 def run_app(app_name):
-    try:
-        subprocess.Popen([app_name], start_new_session=True)
-    except FileNotFoundError:
+    env = os.environ.copy()
+    cur = env.get("PYTHONPATH", "")
+    if NPOS_DIR not in cur.split(os.pathsep):
+        env["PYTHONPATH"] = f"{NPOS_DIR}{os.pathsep}{cur}" if cur else NPOS_DIR
+
+    app_script = os.path.join(NPOS_DIR, "apps", app_name, "main.py")
+    if os.path.exists(app_script):
         try:
             subprocess.Popen(
-                ["python3", f"-m", f"apps.{app_name}.main"],
+                [sys.executable, app_script],
+                env=env,
                 start_new_session=True,
             )
+            return
         except FileNotFoundError:
             pass
+    try:
+        subprocess.Popen(
+            [sys.executable, "-m", f"apps.{app_name}.main"],
+            env=env,
+            start_new_session=True,
+        )
+    except FileNotFoundError:
+        pass
 
 
 def run_command(cmd):

@@ -197,7 +197,18 @@ cp -r "$(dirname "$(dirname "$(readlink -f "$0")")")/desktop" "$CHROOT_DIR/$NPOS
 cp -r "$(dirname "$(dirname "$(readlink -f "$0")")")/apps" "$CHROOT_DIR/$NPOS_DIR/"
 cp -r "$(dirname "$(dirname "$(readlink -f "$0")")")/config" "$CHROOT_DIR/$NPOS_DIR/"
 
-# Créer le lanceur système (démarrage auto de X + bureau)
+# Creer les lanceurs en /usr/bin pour chaque app (points d'entree)
+for app_dir in "$(dirname "$(dirname "$(readlink -f "$0")")")/apps/"*/; do
+    app_name=$(basename "$app_dir")
+    cat > "$CHROOT_DIR/usr/bin/$app_name" << LAUNCHER
+#!/bin/bash
+export PYTHONPATH="/opt/npos:\$PYTHONPATH"
+exec python3 /opt/npos/apps/$app_name/main.py "\$@"
+LAUNCHER
+    chmod +x "$CHROOT_DIR/usr/bin/$app_name"
+done
+
+# Creer le lanceur systeme (demarrage auto de X + bureau)
 cat > "$CHROOT_DIR/usr/bin/npos-session" << 'SESSION'
 #!/bin/bash
 # NextProjectOS Session
@@ -206,24 +217,17 @@ LOG="$HOME/.npos-session.log"
 
 echo "[npos-session] Starting at $(date)" > "$LOG"
 
-# Attendre que DISPLAY soit defini
-for i in 1 2 3 4 5; do
-    if [ -n "$DISPLAY" ]; then break; fi
-    sleep 0.5
-done
 echo "[npos-session] DISPLAY=$DISPLAY" >> "$LOG"
 
 # Demarrer Openbox (gestionnaire de fenetres)
 openbox >> "$LOG" 2>&1 &
 echo "[npos-session] Openbox started (PID=$!)" >> "$LOG"
-sleep 0.5
 
 # Demarrer picom (compositeur Aero)
 picom --config /opt/npos/desktop/compositor/picom.conf >> "$LOG" 2>&1 &
 echo "[npos-session] Picom started (PID=$!)" >> "$LOG"
-sleep 0.3
 
-# Demarrer le shell NPOS
+# Demarrer le shell NPOS (court delai pour que X soit pret)
 echo "[npos-session] Launching NPOS shell..." >> "$LOG"
 exec python3 /opt/npos/desktop/npshell/main.py >> "$LOG" 2>&1
 SESSION

@@ -22,6 +22,11 @@ class NPOSMenu(Gtk.Window):
         self.set_decorated(False)
         self.set_skip_taskbar_hint(True)
         self.set_keep_above(True)
+        self.set_app_paintable(True)
+        screen = Gdk.Screen.get_default()
+        visual = screen.get_rgba_visual()
+        if visual:
+            self.set_visual(visual)
         self.connect("draw", self._on_draw)
         self.connect("key-press-event", self._on_key)
         self.connect("focus-out-event", lambda w, e: w.hide())
@@ -249,6 +254,9 @@ class MenuAppButton(Gtk.EventBox):
         if event.button == 1:
             from desktop.npshell.utils import run_app
             run_app(self.app_id)
+            top = self.get_toplevel()
+            if isinstance(top, Gtk.Window):
+                top.hide()
         return True
 
 
