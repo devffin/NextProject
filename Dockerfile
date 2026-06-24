@@ -10,6 +10,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     squashfs-tools \
     xorriso \
     isolinux \
+    syslinux-common \
     grub-pc-bin \
     grub-common \
     mtools \

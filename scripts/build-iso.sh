@@ -195,19 +195,29 @@ cp "$CHROOT_DIR/boot/vmlinuz-"* "$WORK_DIR/isolinux/vmlinuz"
 cp "$CHROOT_DIR/boot/initrd.img-"* "$WORK_DIR/isolinux/initrd"
 
 # Copier les fichiers ISOLINUX depuis le système hôte
-for f in isolinux.bin ldlinux.c32 libutil.c32 libcom32.c32; do
-    find /usr/lib -name "$f" -exec cp {} "$WORK_DIR/isolinux/" \; 2>/dev/null
-done
-# Si introuvable, chercher dans /usr/share
-for f in isolinux.bin ldlinux.c32; do
-    [ -f "$WORK_DIR/isolinux/$f" ] && continue
-    find /usr/share -name "$f" -exec cp {} "$WORK_DIR/isolinux/" \; 2>/dev/null
+ISOLINUX_MODULES="isolinux.bin ldlinux.c32 libutil.c32 libcom32.c32 vesamenu.c32"
+SEARCH_DIRS="/usr/lib/ISOLINUX /usr/lib/syslinux/modules/bios /usr/lib/syslinux /usr/share/syslinux"
+
+for f in $ISOLINUX_MODULES; do
+    for d in $SEARCH_DIRS; do
+        if [ -f "$d/$f" ]; then
+            cp "$d/$f" "$WORK_DIR/isolinux/$f"
+            echo "   ✓ $f -> $d"
+            break
+        fi
+    done
 done
 
 # Vérifier que isolinux.bin a été trouvé
 if [ ! -f "$WORK_DIR/isolinux/isolinux.bin" ]; then
-    echo "❌ isolinux.bin introuvable. Installez le paquet isolinux :"
-    echo "   sudo apt install isolinux"
+    echo "❌ isolinux.bin introuvable. Installez les paquets :"
+    echo "   sudo apt install isolinux syslinux-common"
+    exit 1
+fi
+
+if [ ! -f "$WORK_DIR/isolinux/ldlinux.c32" ]; then
+    echo "❌ ldlinux.c32 introuvable. Installez :"
+    echo "   sudo apt install syslinux-common"
     exit 1
 fi
 
