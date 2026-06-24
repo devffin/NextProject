@@ -306,29 +306,39 @@ for m in "$CHROOT_DIR/boot/memtest86+"*.bin "$CHROOT_DIR/boot/memtest".bin; do
     [ -f "$m" ] && cp "$m" "$ISO_STAGING/live/memtest" && break
 done
 
-# Générer un splash screen pour le menu de boot
+# Générer un splash screen pour le menu de boot (optionnel, pas critique)
 echo "🖼️  Génération du splash screen du boot..."
+SPLASH_OK=false
 if command -v convert &>/dev/null; then
-    # ImageMagick disponible - créer un splash aux couleurs Aero
     convert -size 640x480 gradient:'#0d47a1'-'#1e88e5' \
         -fill white -gravity center \
         -pointsize 28 -annotate +0-40 "NextProjectOS" \
         -pointsize 16 -annotate +0+20 "Developpement by AI" \
-        "$ISO_STAGING/isolinux/splash.png" 2>/dev/null
-elif command -v python3 &>/dev/null; then
-    python3 -c "
-from PIL import Image, ImageDraw, ImageFont
-img = Image.new('RGB', (640, 480), '#0d47a1')
-draw = ImageDraw.Draw(img)
-for y in range(480):
-    r = 13 + int((30-13) * y / 480)
-    g = 71 + int((136-71) * y / 480)
-    b = 161 + int((229-161) * y / 480)
-    draw.line([(0,y), (639,y)], fill=(r,g,b))
-img.save('$ISO_STAGING/isolinux/splash.png')
-" 2>/dev/null
+        "$ISO_STAGING/isolinux/splash.png" 2>/dev/null && SPLASH_OK=true
 fi
-# Si aucun outil, le menu texte s'affichera (le splash n'est pas critique)
+if [ "$SPLASH_OK" = false ] && command -v python3 &>/dev/null; then
+    python3 -c "
+import sys
+try:
+    from PIL import Image, ImageDraw
+    img = Image.new('RGB', (640, 480), '#0d47a1')
+    draw = ImageDraw.Draw(img)
+    for y in range(480):
+        r = 13 + int((30-13) * y / 480)
+        g = 71 + int((136-71) * y / 480)
+        b = 161 + int((229-161) * y / 480)
+        draw.line([(0,y), (639,y)], fill=(r,g,b))
+    img.save('$ISO_STAGING/isolinux/splash.png')
+    sys.exit(0)
+except ImportError:
+    sys.exit(1)
+" 2>/dev/null && SPLASH_OK=true
+fi
+if [ "$SPLASH_OK" = true ]; then
+    echo "   ✓ splash.png créé"
+else
+    echo "   - splash ignoré (ImageMagick ou PIL non disponible)"
+fi
 
 # Vérifier les fichiers essentiels
 if [ ! -f "$ISO_STAGING/isolinux/isolinux.bin" ]; then
